@@ -289,7 +289,14 @@
       loadTable();
       }
 
-      if (useFirebase() || useServer()) {
+      if (useFirebase()) {
+        firebaseOnAuthState(function (user) {
+          if (user) initAdmin();
+          else window.location.href = 'login.html';
+        });
+        return;
+      }
+      if (useServer()) {
         if (!getToken()) { window.location.href = 'login.html'; return; }
         apiMe().then(initAdmin).catch(function () { setToken(null); if (typeof apiLogout === 'function') apiLogout(); window.location.href = 'login.html'; });
         return;
