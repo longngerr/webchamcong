@@ -1,0 +1,4 @@
+# Netlify - Web Chấm Công (static, Firebase)
+[build]
+  publish = "."
+  command = ""

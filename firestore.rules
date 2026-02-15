@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Collection chấm công
+    match /attendance/{docId} {
+      // Công khai: chỉ đọc bản ghi đã duyệt; admin (đã đăng nhập) đọc tất cả
+      allow read: if request.auth != null || resource.data.status == 'approved';
+      // Bất kỳ ai cũng có thể tạo bản ghi mới (chấm công gửi lên)
+      allow create: if request.resource.data.keys().hasAll(['hoTen', 'capBac', 'gioVao', 'gioRa', 'ghiChu', 'status', 'createdAt', 'updatedAt'])
+                    && request.resource.data.status == 'pending';
+      // Chỉ user đã đăng nhập (admin) mới được cập nhật/xóa
+      allow update, delete: if request.auth != null;
+    }
+  }
+}
