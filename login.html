@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập Admin - Web Chấm Công</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🕐 Web Chấm Công</h1>
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="login.html" class="active">Đăng nhập Admin</a>
+    </nav>
+  </header>
+
+  <div class="login-page">
+    <div class="login-box">
+      <h1>Đăng nhập Admin</h1>
+      <div id="loginAlert"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <input type="text" id="username" required placeholder="admin" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="password" id="password" required placeholder="••••••" autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+        </div>
+      </form>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
+        Lần đầu: dùng <strong>admin</strong> / <strong>admin123</strong> để đăng nhập. Nên đổi mật khẩu trong trang quản trị.
+      </p>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('logout') === '1') {
+        setSession(null);
+        window.history.replaceState({}, '', 'login.html');
+      }
+      if (isAdminLoggedIn()) {
+        window.location.href = 'admin.html';
+        return;
+      }
+
+      function ensureAdminUser() {
+        var admin = getAdminUser();
+        if (!admin) {
+          setAdminUser({ username: 'admin', password: 'admin123' });
+        }
+      }
+      ensureAdminUser();
+
+      document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var username = document.getElementById('username').value.trim();
+        var password = document.getElementById('password').value;
+        var admin = getAdminUser();
+        if (!admin || admin.username !== username || admin.password !== password) {
+          showAlert('Sai tên đăng nhập hoặc mật khẩu.');
+          return;
+        }
+        setSession({ username: username, loginAt: new Date().toISOString() });
+        window.location.href = 'admin.html';
+      });
+
+      function showAlert(msg) {
+        var box = document.getElementById('loginAlert');
+        box.innerHTML = '<div class="alert alert-error">' + msg + '</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
